@@ -1,2 +1,2 @@
-# linux-configs
-Shell scripts for prepping a new linux machine for development
+Super special proprietary configs
+hi mom

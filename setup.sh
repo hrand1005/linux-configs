@@ -1,3 +1,4 @@
+# DEPRECATED
 # useful setup and installation steps
 echo "\nupdate and upgrade"
 apt update
@@ -68,7 +69,6 @@ echo "\nInstalling feh"
 apt install feh -y
 
 echo "\nMapping caps-lock to escape"
-echo "export PATH=$PATH:/usr/local/go/bin">>$HOME/.profile
 setxkbmap -layout us -option caps:escape
 
 echo "\nSource .profile"

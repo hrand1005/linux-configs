@@ -39,3 +39,15 @@ Name key and paste contents.
 sudo apt update && sudo apt upgrade
 sudo apt install git
 ```
+
+## Setup tmux
+
+Install:
+```
+sudo apt install tmux
+```
+
+Run setup script with personal bindings (vim):
+```
+./setup_tmux.sh
+```

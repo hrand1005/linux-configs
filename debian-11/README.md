@@ -51,3 +51,17 @@ Run setup script with personal bindings (vim):
 ```
 ./setup_tmux.sh
 ```
+
+## Setup i3
+
+Install:
+```
+sudo apt-get install i3
+```
+
+Logout and login with i3.
+
+Copy configs to personal directory:
+```
+./setup_i3.sh
+```

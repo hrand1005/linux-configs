@@ -65,3 +65,41 @@ Copy configs to personal directory:
 ```
 ./setup_i3.sh
 ```
+
+## Setup Neovim
+
+Follow instructions to build and install latest stable version of neovim from source.
+[Full Tutorial](https://github.com/neovim/neovim/wiki/Building-Neovim)
+
+For debian...
+
+1. Install prerequisites:
+```
+sudo apt-get install ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip curl doxygen
+```
+
+2. Clone repository:
+```
+git clone https://github.com/neovim/neovim
+```
+
+3. For the latest stable version, checkout the branch `stable`:
+```
+cd neovim 
+git checkout stable
+```
+
+4. Build from root of cloned repo:
+```
+make CMAKE_BUILD_TYPE=RelWithDebInfo
+```
+
+5. Install:
+```
+sudo make install
+```
+
+Additionally, you can install the lua interpreter (not sure if bundled):
+```
+sudo apt install lua5.4
+```

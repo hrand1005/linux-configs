@@ -103,3 +103,22 @@ Additionally, you can install the lua interpreter (not sure if bundled):
 ```
 sudo apt install lua5.4
 ```
+
+## Install Languages / Servers
+
+Install python3-venv:
+```
+sudo apt-get install python3-venv
+```
+
+Install Go:
+
+```
+rm -rf /usr/local/go && tar -C /usr/local -xzf go1.19.4.linux-amd64.tar.gz
+```
+Add the following to `~/.profile`:
+```
+export PATH=$PATH:/usr/local/go/bin
+```
+
+

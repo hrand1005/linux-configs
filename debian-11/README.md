@@ -121,4 +121,50 @@ Add the following to `~/.profile`:
 export PATH=$PATH:/usr/local/go/bin
 ```
 
+## Tmux Plugin Manager
 
+Install from source
+```
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+```
+
+Follow README.md instructions, source tmux configuration:
+```
+tmux source ~/.tmux.conf
+```
+
+## Picom
+
+Install Picom from source
+```
+sudo apt install cmake meson git pkg-config asciidoc libxext-dev libxcb1-dev libxcb-damage0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-render-util0-dev libxcb-render0-dev libxcb-randr0-dev libxcb-composite0-dev libxcb-image0-dev libxcb-present-dev libxcb-xinerama0-dev libxcb-glx0-dev libpixman-1-dev libdbus-1-dev libconfig-dev libgl1-mesa-dev  libpcre2-dev  libevdev-dev uthash-dev libev-dev libx11-xcb-dev
+```
+Clone the repo to the appropriate location:
+```
+git clone https://github.com/jonaburg/picom
+```
+
+To build and install:
+```
+cd picom
+git submodule update --init --recursive
+meson --buildtype=release . build
+ninja -C build
+sudo ninja -C build install
+```
+
+copy picom configs from configs to `~/.config/picom/picom.conf`
+
+```
+cp configs/picom.conf ~/.config/picom/picom.conf
+```
+
+In order to run picom on debian, it seems it needs to use an experimental backend:
+```
+picom --config ~/.config/picom/picom.conf --experimental-backend -b
+```
+
+I added this to my `.xsessionrc` file as the following line:
+```
+picom --config $HOME/.config/picom/picom.conf --experimental-backend -b
+```

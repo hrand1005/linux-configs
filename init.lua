@@ -10,6 +10,29 @@ vim.opt.cursorline = true
 vim.opt.termguicolors = true
 vim.opt.splitright = true
 
+vim.opt.filetype.indent = true
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
+
+vim.opt.backup = false
+vim.opt.swapfile = false
+vim.opt.scrolloff = 10
+
+vim.opt.hlsearch = false
+vim.opt.incsearch = true
+
+vim.opt.termguicolors = true
+vim.opt.colorcolumn = "80"
+
+vim.opt.smartindent = true
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+vim.opt.history=1000
+
+vim.opt.updatetime = 50
+
+
 vim.keymap.set("n", "<C-h>", "<C-w>h", {noremap = true, silent = true})
 vim.keymap.set("n", "<C-j>", "<C-w>j", {noremap = true, silent = true})
 vim.keymap.set("n", "<C-l>", "<C-w>l", {noremap = true, silent = true})
@@ -80,3 +103,5 @@ require("telescope").setup {
         }
     }
 }
+
+vim.keymap.set("n", "<leader>s", ":%s/\\<<C-r><C-w>\\>/<C-r><C-w>/gI<Left><Left><Left>")

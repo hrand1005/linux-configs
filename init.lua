@@ -69,7 +69,13 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
     spec = {
         -- add your plugins here
-        {"rose-pine/neovim", name = "rose-pine"}, {
+        { "ellisonleao/gruvbox.nvim", name = "gruvbox" },
+        { "folke/tokyonight.nvim", name = "tokyonight" },
+        { "catppuccin/nvim", name = "catppuccin" },
+        { "rose-pine/neovim", name = "rose-pine"},
+        { "nyoom-engineering/oxocarbon.nvim", name = "oxocarbon" },
+        { "bluz71/vim-moonfly-colors", name = "moonfly" },
+        {
             "nvim-telescope/telescope.nvim",
             tag = "0.1.8",
             dependencies = {"nvim-lua/plenary.nvim"}
@@ -79,12 +85,12 @@ require("lazy").setup({
     checker = {enabled = false}
 })
 
-vim.cmd.colorscheme("rose-pine")
+vim.cmd.colorscheme("moonfly")
 
 local builtin = require("telescope.builtin")
 vim.keymap.set("n", "<leader>ff", builtin.find_files,
                {desc = "Telescope find files"})
-vim.keymap.set("n", "<leader>fg", builtin.live_grep,
+vim.keymap.set("n", "<leader>fw", builtin.live_grep,
                {desc = "Telescope live grep"})
 vim.keymap.set("n", "<leader>fb", builtin.buffers, {desc = "Telescope buffers"})
 vim.keymap.set("n", "<leader>fh", builtin.help_tags,

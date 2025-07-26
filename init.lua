@@ -68,7 +68,6 @@ vim.opt.rtp:prepend(lazypath)
 -- Setup lazy.nvim
 require("lazy").setup({
     spec = {
-        -- add your plugins here
         { "ellisonleao/gruvbox.nvim", name = "gruvbox" },
         { "folke/tokyonight.nvim", name = "tokyonight" },
         { "catppuccin/nvim", name = "catppuccin" },
@@ -79,6 +78,28 @@ require("lazy").setup({
             "nvim-telescope/telescope.nvim",
             tag = "0.1.8",
             dependencies = {"nvim-lua/plenary.nvim"}
+        },
+        {
+            -- cscope -> used for linux kernel
+          "dhananjaylatkar/cscope_maps.nvim",
+          dependencies = {
+            "nvim-telescope/telescope.nvim", -- optional [for picker="telescope"]
+            "ibhagwan/fzf-lua", -- optional [for picker="fzf-lua"]
+            "echasnovski/mini.pick", -- optional [for picker="mini-pick"]
+            "folke/snacks.nvim", -- optional [for picker="snacks"]
+          },
+          opts = {
+            -- USE EMPTY FOR DEFAULT OPTIONS
+            -- DEFAULTS ARE LISTED BELOW
+          },
+        },
+        -- LSP SUPPORT #1, plus rust specific support
+        {
+            "neovim/nvim-lspconfig",
+            dependencies = {
+                "williamboman/mason.nvim",
+                "williamboman/mason-lspconfig.nvim",
+            },
         }
     },
     install = {colorscheme = {"habamax"}},
@@ -86,6 +107,7 @@ require("lazy").setup({
 })
 
 vim.cmd.colorscheme("moonfly")
+-- vim.cmd.colorscheme("vim")
 
 local builtin = require("telescope.builtin")
 vim.keymap.set("n", "<leader>ff", builtin.find_files,
@@ -100,14 +122,52 @@ vim.keymap
 vim.keymap.set("n", "<S-l>", ":tabnext<CR>", {noremap = true, silent = true})
 vim.keymap.set("n", "<Leader>c", ":bd<CR>", {noremap = true, silent = true})
 
-local actions = require("telescope.actions")
-require("telescope").setup {
-    defaults = {
-        mappings = {
-            i = {["<CR>"] = actions.select_tab},
-            n = {["<CR>"] = actions.select_tab}
-        }
-    }
-}
+-- local actions = require("telescope.actions")
+-- require("telescope").setup {
+--     defaults = {
+--         mappings = {
+--             i = {["<CR>"] = actions.select_tab},
+--             n = {["<CR>"] = actions.select_tab}
+--         }
+--     }
+-- }
 
-vim.keymap.set("n", "<leader>s", ":%s/\\<<C-r><C-w>\\>/<C-r><C-w>/gI<Left><Left><Left>")
+-- Don't use this for now
+-- vim.keymap.set("n", "<leader>s", ":%s/\\<<C-r><C-w>\\>/<C-r><C-w>/gI<Left><Left><Left>")
+
+vim.keymap.set("n", "<leader>sg", ":Cs f g ", { desc = "Cscope: Find global symbol" })
+
+-- LSP SUPPORT #2
+require("mason").setup()
+require("mason-lspconfig").setup({
+    ensure_installed = { "rust_analyzer" },
+})
+
+-- RUST SPECIFIC LSP SUPPORT #2
+-- In your lazy.nvim setup, only install nvim-lspconfig and mason plugins
+--
+-- require("mason").setup()
+require("mason-lspconfig").setup({
+  ensure_installed = { "rust_analyzer" },
+})
+
+-- Rust LSP setup with correct on_attach keymaps:
+require("lspconfig").rust_analyzer.setup({
+  on_attach = function(client, bufnr)
+    local opts = { noremap = true, silent = true, buffer = bufnr }
+
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+    vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+    vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+    vim.keymap.set("n", "<leader>f", function() vim.lsp.buf.format({ async = true }) end, opts)
+    vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { noremap=true, silent=true })
+  end,
+  settings = {
+    ["rust-analyzer"] = {
+      cargo = { allFeatures = true },
+      checkOnSave = true,
+    },
+  },
+})

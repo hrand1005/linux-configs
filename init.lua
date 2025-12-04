@@ -171,3 +171,15 @@ require("lspconfig").rust_analyzer.setup({
     },
   },
 })
+
+-- Terminal Shortcuts
+vim.keymap.set("n", "<leader>th", ":split | terminal<CR>", { noremap = true, silent = true, desc = "Open terminal horizontal split"});
+vim.keymap.set("n", "<leader>tv", ":vsplit | terminal<CR>", { noremap = true, silent = true, desc = "Open terminal vertical split"});
+vim.keymap.set("n", "<leader>tt", ":tabnew | terminal<CR>", { noremap = true, silent = true, desc = "Open terminal in new tab"});
+-- Escape from terminal
+vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { noremap = true, silent = true, desc = "Exit terminal mode"});
+-- Navigate in/out of terminal
+vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", {noremap = true, silent = true})
+vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j", {noremap = true, silent = true})
+vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l", {noremap = true, silent = true})
+vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k", {noremap = true, silent = true})

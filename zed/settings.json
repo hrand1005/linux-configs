@@ -8,12 +8,12 @@
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
   "base_keymap": "VSCode",
+  "terminal": {
+    "dock": "right"
+  },
   "vim_mode": true,
+  "cursor_shape": "block",
   "ui_font_size": 16,
   "buffer_font_size": 15,
-  "theme": {
-    "mode": "system",
-    "light": "One Light",
-    "dark": "Ayu Dark"
-  }
+  "theme": "Gruvbox Dark Hard"
 }

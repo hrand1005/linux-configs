@@ -7,13 +7,17 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "agent": {
+    "dock": "right",
+    "model_parameters": []
+  },
   "base_keymap": "VSCode",
   "terminal": {
     "dock": "right"
   },
   "vim_mode": true,
-  "cursor_shape": "block",
   "ui_font_size": 16,
+  "relative_line_numbers": true,
   "buffer_font_size": 15,
   "theme": "Gruvbox Dark Hard"
 }

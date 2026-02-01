@@ -152,7 +152,7 @@ require("mason-lspconfig").setup({
 })
 
 -- Rust LSP setup with correct on_attach keymaps:
-require("lspconfig").rust_analyzer.setup({
+vim.lsp.config["rust-analyzer"] = {
   on_attach = function(client, bufnr)
     local opts = { noremap = true, silent = true, buffer = bufnr }
 
@@ -173,7 +173,7 @@ require("lspconfig").rust_analyzer.setup({
       },
     },
   },
-})
+}
 
 -- Terminal Shortcuts
 vim.keymap.set("n", "<leader>th", ":split | terminal<CR>", { noremap = true, silent = true, desc = "Open terminal horizontal split"});

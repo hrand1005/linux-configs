@@ -93,7 +93,6 @@ require("lazy").setup({
             -- DEFAULTS ARE LISTED BELOW
           },
         },
-        -- LSP SUPPORT #1, plus rust specific support
         {
             "neovim/nvim-lspconfig",
             dependencies = {
@@ -137,21 +136,12 @@ vim.keymap.set("n", "<Leader>c", ":bd<CR>", {noremap = true, silent = true})
 
 vim.keymap.set("n", "<leader>sg", ":Cs f g ", { desc = "Cscope: Find global symbol" })
 
--- LSP SUPPORT #2
+-- Rust LSP setup with correct on_attach keymaps:
 require("mason").setup()
 require("mason-lspconfig").setup({
     ensure_installed = { "rust_analyzer" },
 })
 
--- RUST SPECIFIC LSP SUPPORT #2
--- In your lazy.nvim setup, only install nvim-lspconfig and mason plugins
---
--- require("mason").setup()
-require("mason-lspconfig").setup({
-  ensure_installed = { "rust_analyzer" },
-})
-
--- Rust LSP setup with correct on_attach keymaps:
 vim.lsp.config["rust-analyzer"] = {
   on_attach = function(client, bufnr)
     local opts = { noremap = true, silent = true, buffer = bufnr }

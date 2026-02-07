@@ -26,12 +26,9 @@ vim.keymap.set("n", "<C-l>", "<C-w>l", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-k>", "<C-w>k", { noremap = true, silent = true })
 
 vim.keymap.set("n", "<C-Up>", ":resize -2<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<C-Down>", ":resize +2<CR>",
-    { noremap = true, silent = true })
-vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>",
-    { noremap = true, silent = true })
-vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>",
-    { noremap = true, silent = true })
+vim.keymap.set("n", "<C-Down>", ":resize +2<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", { noremap = true, silent = true })
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -62,59 +59,42 @@ require("lazy").setup({
         { "nyoom-engineering/oxocarbon.nvim", name = "oxocarbon" },
         { "bluz71/vim-moonfly-colors",        name = "moonfly" },
         {
-            "nvim-telescope/telescope.nvim",
-            tag = "0.1.8",
-            dependencies = { "nvim-lua/plenary.nvim" }
+            "ibhagwan/fzf-lua",
+            dependencies = { "nvim-tree/nvim-web-devicons" },
         },
-        {
-            -- cscope -> used for linux kernel
-            "dhananjaylatkar/cscope_maps.nvim",
-            dependencies = {
-                "nvim-telescope/telescope.nvim", -- for picker="telescope"
-            },
-            opts = {
-                -- USE EMPTY FOR DEFAULT OPTIONS
-                -- DEFAULTS ARE LISTED BELOW
-            },
-        }
     },
-    install = { colorscheme = { "habamax" } },
     checker = { enabled = false }
 })
 
 vim.cmd.colorscheme("moonfly")
--- vim.cmd.colorscheme("vim")
 
-local builtin = require("telescope.builtin")
-vim.keymap.set("n", "<leader>ff", builtin.find_files,
-    { desc = "Telescope find files" })
-vim.keymap.set("n", "<leader>fw", builtin.live_grep,
-    { desc = "Telescope live grep" })
-vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" })
-vim.keymap.set("n", "<leader>fh", builtin.help_tags,
-    { desc = "Telescope help tags" })
-vim.keymap
-    .set("n", "<S-h>", ":tabprevious<CR>", { noremap = true, silent = true })
+-- FZF-Lua keymaps
+local fzf = require("fzf-lua")
+fzf.register_ui_select()
+vim.keymap.set("n", "<leader>ff", fzf.files, { desc = "Find files" })
+vim.keymap.set("n", "<leader>fw", fzf.live_grep, { desc = "Live grep" })
+vim.keymap.set("n", "<leader>fb", fzf.buffers, { desc = "Buffers" })
+vim.keymap.set("n", "<leader>fh", fzf.help_tags, { desc = "Help tags" })
+
+vim.keymap.set("n", "<S-h>", ":tabprevious<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<S-l>", ":tabnext<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<Leader>c", ":bd<CR>", { noremap = true, silent = true })
 
-vim.keymap.set("n", "<leader>sg", ":Cs f g ", { desc = "Cscope: Find global symbol" })
-
 -- Set common LSP configuration for all servers
-vim.lsp.config('*', {
-    root_markers = { '.git' },
+vim.lsp.config("*", {
+    root_markers = { ".git" },
     on_attach = function(_, bufnr)
         local opts = { noremap = true, silent = true, buffer = bufnr }
-        local telescope_builtin = require('telescope.builtin')
+
         -- Navigation
-        vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-        vim.keymap.set("n", "gi", telescope_builtin.lsp_implementations, opts)
-        vim.keymap.set("n", "gr", telescope_builtin.lsp_references, opts)
-        vim.keymap.set("n", "<leader>D", telescope_builtin.lsp_type_definitions, opts)
+        vim.keymap.set("n", "gd", fzf.lsp_definitions, opts)
+        vim.keymap.set("n", "gi", fzf.lsp_implementations, opts)
+        vim.keymap.set("n", "gr", fzf.lsp_references, opts)
+        vim.keymap.set("n", "<leader>D", fzf.lsp_typedefs, opts)
 
         -- Actions
         vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-        vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+        vim.keymap.set("n", "<leader>ca", fzf.lsp_code_actions, opts)
         vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
         vim.keymap.set("n", "<leader>f", function() vim.lsp.buf.format({ async = true }) end, opts)
 
@@ -122,10 +102,11 @@ vim.lsp.config('*', {
         vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, opts)
         vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, opts)
         vim.keymap.set("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, opts)
-        vim.keymap.set("n", "<leader>dd", telescope_builtin.diagnostics, opts) -- All diagnostics
+        vim.keymap.set("n", "<leader>dd", fzf.diagnostics_document, opts)
+        vim.keymap.set("n", "<leader>dw", fzf.diagnostics_workspace, opts)
     end
 })
---
+
 -- Rust LSP support
 vim.lsp.config["rust-analyzer"] = {
     cmd = { "rust-analyzer" },
@@ -134,7 +115,7 @@ vim.lsp.config["rust-analyzer"] = {
     settings = {
         ["rust-analyzer"] = {
             cargo = { allFeatures = true },
-            checkOnSave = true, -- for cargo check, use checkOnSave = true
+            checkOnSave = true,
             diagnostics = {
                 disabled = { "unlinked-file" },
             },
@@ -162,17 +143,28 @@ vim.lsp.config["lua_ls"] = {
 }
 vim.lsp.enable("lua_ls")
 
+-- Python LSP support (ty)
+vim.lsp.config["ty"] = {
+    cmd = { "ty", "server" },
+    filetypes = { "python" },
+    root_markers = { "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", "Pipfile", "pyrightconfig.json" },
+    settings = {
+        -- Ty settings can go here if needed
+        python = {
+            analysis = {
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true,
+                diagnosticMode = "workspace",
+            },
+        },
+    },
+}
+vim.lsp.enable("ty")
+
 -- Terminal Shortcuts
 vim.keymap.set("n", "<leader>th", ":split | terminal<CR>",
-    { noremap = true, silent = true, desc = "Open terminal horizontal split" });
+    { noremap = true, silent = true, desc = "Open terminal horizontal split" })
 vim.keymap.set("n", "<leader>tv", ":vsplit | terminal<CR>",
-    { noremap = true, silent = true, desc = "Open terminal vertical split" });
+    { noremap = true, silent = true, desc = "Open terminal vertical split" })
 vim.keymap.set("n", "<leader>tt", ":tabnew | terminal<CR>",
-    { noremap = true, silent = true, desc = "Open terminal in new tab" });
--- Escape from terminal
-vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { noremap = true, silent = true, desc = "Exit terminal mode" });
--- Navigate in/out of terminal
-vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { noremap = true, silent = true })
-vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j", { noremap = true, silent = true })
-vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l", { noremap = true, silent = true })
-vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k", { noremap = true, silent = true })
+    { noremap = true, silent = true, desc = "Open terminal in new tab" })

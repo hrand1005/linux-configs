@@ -1,37 +1,24 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
-
 vim.opt.relativenumber = true
 vim.opt.number = true
-vim.opt.tabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.expandtab = true
 vim.opt.cursorline = true
 vim.opt.termguicolors = true
 vim.opt.splitright = true
-
-vim.opt.filetype.indent = true
-vim.opt.softtabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.expandtab = true
-
 vim.opt.backup = false
 vim.opt.swapfile = false
 vim.opt.scrolloff = 10
-
 vim.opt.hlsearch = false
 vim.opt.incsearch = true
-
-vim.opt.termguicolors = true
 vim.opt.colorcolumn = "80"
-
-vim.opt.smartindent = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.history = 1000
-
 vim.opt.updatetime = 50
 
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
 
 vim.keymap.set("n", "<C-h>", "<C-w>h", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-j>", "<C-w>j", { noremap = true, silent = true })
@@ -118,16 +105,27 @@ vim.lsp.config('*', {
     root_markers = { '.git' },
     on_attach = function(_, bufnr)
         local opts = { noremap = true, silent = true, buffer = bufnr }
+        local telescope_builtin = require('telescope.builtin')
+        -- Navigation
         vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+        vim.keymap.set("n", "gi", telescope_builtin.lsp_implementations, opts)
+        vim.keymap.set("n", "gr", telescope_builtin.lsp_references, opts)
+        vim.keymap.set("n", "<leader>D", telescope_builtin.lsp_type_definitions, opts)
+
+        -- Actions
         vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
         vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
         vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-        vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
         vim.keymap.set("n", "<leader>f", function() vim.lsp.buf.format({ async = true }) end, opts)
-        vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, opts)
-    end,
-})
 
+        -- Diagnostics
+        vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, opts)
+        vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, opts)
+        vim.keymap.set("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, opts)
+        vim.keymap.set("n", "<leader>dd", telescope_builtin.diagnostics, opts) -- All diagnostics
+    end
+})
+--
 -- Rust LSP support
 vim.lsp.config["rust-analyzer"] = {
     cmd = { "rust-analyzer" },
@@ -136,7 +134,7 @@ vim.lsp.config["rust-analyzer"] = {
     settings = {
         ["rust-analyzer"] = {
             cargo = { allFeatures = true },
-            checkOnSave = { command = "clippy" }, -- for cargo check, use checkOnSave = true
+            checkOnSave = true, -- for cargo check, use checkOnSave = true
             diagnostics = {
                 disabled = { "unlinked-file" },
             },

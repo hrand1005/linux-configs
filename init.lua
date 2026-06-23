@@ -1,8 +1,5 @@
 -- External dependencies:
--- lua-language-server
--- rust-analyzer
--- tree-sitter cli
--- ty (or other python lsp)
+-- lua-language-server, rust-analyzer, tree-sitter cli, ty, slangd
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 vim.opt.relativenumber = true
@@ -20,6 +17,7 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.history = 1000
 vim.opt.updatetime = 50
+vim.opt.wrap = false
 
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
@@ -35,7 +33,7 @@ vim.keymap.set("n", "<C-Down>", ":resize +2<CR>", { noremap = true, silent = tru
 vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", { noremap = true, silent = true })
 
-vim.keymap.set("n", "<leader>p", vim.cmd.Ex);
+vim.keymap.set("n", "<leader>p", vim.cmd.Ex)
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -77,7 +75,7 @@ require("lazy").setup({
                 local filetypes = {
                     "rust", "python", "bash", "c", "diff", "html", "lua",
                     "luadoc", "markdown", "markdown_inline", "query", "vim",
-                    "vimdoc",
+                    "vimdoc", "slang", -- Register slang grammar inside the main loop
                 }
                 require("nvim-treesitter").install(filetypes)
                 vim.api.nvim_create_autocmd("FileType", {
@@ -90,91 +88,52 @@ require("lazy").setup({
             "nvim-treesitter/nvim-treesitter-textobjects",
             branch = "main",
             init = function()
-                -- Disable entire built-in ftplugin mappings to avoid conflicts.
-                -- See https://github.com/neovim/neovim/tree/master/runtime/ftplugin
-                -- for built-in ftplugins.
                 vim.g.no_plugin_maps = true
-
-                -- Or, disable per filetype (add as you like)
-                -- vim.g.no_python_maps = true
-                -- vim.g.no_ruby_maps = true
-                -- vim.g.no_rust_maps = true
-                -- vim.g.no_go_maps = true
             end,
-            config = function()
-                -- put your config here
-            end,
+            config = function() end,
+        },
+        {
+            'pixelsandpointers/slang.nvim',
+            dependencies = {
+                'neovim/nvim-lspconfig', -- Required internally by the plugin
+                'nvim-treesitter/nvim-treesitter',
+            },
+            opts = {
+                auto_format = true,
+                inlay_hints = true,
+            },
         }
     },
     checker = { enabled = false }
 })
 
--- treesitter objects
+-- Treesitter objects
 require("nvim-treesitter-textobjects").setup {
     select = {
-        -- Automatically jump forward to textobj, similar to targets.vim
         lookahead = true,
-        -- You can choose the select mode (default is charwise 'v')
-        --
-        -- Can also be a function which gets passed a table with the keys
-        -- * query_string: eg '@function.inner'
-        -- * method: eg 'v' or 'o'
-        -- and should return the mode ('v', 'V', or '<c-v>') or a table
-        -- mapping query_strings to modes.
         selection_modes = {
-            ['@parameter.outer'] = 'v', -- charwise
-            ['@function.outer'] = 'V',  -- linewise
-            -- ['@class.outer'] = '<c-v>', -- blockwise
+            ['@parameter.outer'] = 'v',
+            ['@function.outer'] = 'V',
         },
-        -- If you set this to `true` (default is `false`) then any textobject is
-        -- extended to include preceding or succeeding whitespace. Succeeding
-        -- whitespace has priority in order to act similarly to eg the built-in
-        -- `ap`.
-        --
-        -- Can also be a function which gets passed a table with the keys
-        -- * query_string: eg '@function.inner'
-        -- * selection_mode: eg 'v'
-        -- and should return true of false
         include_surrounding_whitespace = false,
     },
 }
 
--- treesitter keymaps
--- You can use the capture groups defined in `textobjects.scm`
+-- Treesitter keymaps
 local ts_select = require("nvim-treesitter-textobjects.select").select_textobject
-vim.keymap.set({ "x", "o" }, "af", function()
-    ts_select("@function.outer", "textobjects")
-end)
-vim.keymap.set({ "x", "o" }, "if", function()
-    ts_select("@function.inner", "textobjects")
-end)
-vim.keymap.set({ "x", "o" }, "ac", function()
-    ts_select("@class.outer", "textobjects")
-end)
-vim.keymap.set({ "x", "o" }, "ic", function()
-    ts_select("@class.inner", "textobjects")
-end)
-vim.keymap.set({ "x", "o" }, "ai", function()
-    ts_select("@conditional.outer", "textobjects")
-end)
-vim.keymap.set({ "x", "o" }, "ii", function()
-    ts_select("@conditional.inner", "textobjects")
-end)
-vim.keymap.set({ "x", "o" }, "al", function()
-    ts_select("@loop.outer", "textobjects")
-end)
-vim.keymap.set({ "x", "o" }, "il", function()
-    ts_select("@loop.inner", "textobjects")
-end)
-vim.keymap.set({ "x", "o" }, "ab", function()
-    ts_select("@block.outer", "textobjects")
-end)
-vim.keymap.set({ "x", "o" }, "ib", function()
-    ts_select("@block.inner", "textobjects")
-end)
+vim.keymap.set({ "x", "o" }, "af", function() ts_select("@function.outer", "textobjects") end)
+vim.keymap.set({ "x", "o" }, "if", function() ts_select("@function.inner", "textobjects") end)
+vim.keymap.set({ "x", "o" }, "ac", function() ts_select("@class.outer", "textobjects") end)
+vim.keymap.set({ "x", "o" }, "ic", function() ts_select("@class.inner", "textobjects") end)
+vim.keymap.set({ "x", "o" }, "ai", function() ts_select("@conditional.outer", "textobjects") end)
+vim.keymap.set({ "x", "o" }, "ii", function() ts_select("@conditional.inner", "textobjects") end)
+vim.keymap.set({ "x", "o" }, "al", function() ts_select("@loop.outer", "textobjects") end)
+vim.keymap.set({ "x", "o" }, "il", function() ts_select("@loop.inner", "textobjects") end)
+vim.keymap.set({ "x", "o" }, "ab", function() ts_select("@block.outer", "textobjects") end)
+vim.keymap.set({ "x", "o" }, "ib", function() ts_select("@block.inner", "textobjects") end)
 
 vim.cmd.colorscheme("gruvbox")
--- set transparency
+-- Set transparency
 vim.cmd([[
   highlight Normal guibg=NONE ctermbg=NONE
   highlight NonText guibg=NONE ctermbg=NONE
@@ -201,13 +160,8 @@ vim.lsp.config("*", {
     on_attach = function(client, bufnr)
         local opts = { noremap = true, silent = true, buffer = bufnr }
 
-        -- <C-n> / <C-p> — navigate down/up through suggestions
-        -- <CR> — confirm selection
-        -- <C-e> — dismiss the menu
-        -- <C-y> — accept the currently highlighted item
         vim.lsp.completion.enable(true, client.id, bufnr, { autotrigger = false })
         vim.keymap.set("i", "<C-Space>", function() vim.lsp.completion.get() end, opts)
-        -- vim.keymap.set("i", "<C-Space>", function() vim.lsp.completion.trigger() end, opts)
 
         -- Navigation
         vim.keymap.set("n", "gd", fzf.lsp_definitions, opts)
@@ -239,9 +193,7 @@ vim.lsp.config["rust-analyzer"] = {
         ["rust-analyzer"] = {
             cargo = { allFeatures = true },
             checkOnSave = true,
-            diagnostics = {
-                disabled = { "unlinked-file" },
-            },
+            diagnostics = { disabled = { "unlinked-file" } },
         },
     },
 }
@@ -272,7 +224,6 @@ vim.lsp.config["ty"] = {
     filetypes = { "python" },
     root_markers = { "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", "Pipfile", "pyrightconfig.json" },
     settings = {
-        -- Ty settings can go here if needed
         python = {
             analysis = {
                 autoSearchPaths = true,
@@ -286,11 +237,12 @@ vim.lsp.enable("ty")
 
 -- C/C++ LSP support (clangd)
 vim.lsp.config('clangd', {
-  cmd = { 'clangd' },
-  filetypes = { 'c', 'cpp' },
-  root_markers = { 'compile_commands.json', 'Makefile' },
+    cmd = { 'clangd' },
+    filetypes = { 'c', 'cpp' },
+    root_markers = { 'compile_commands.json', 'Makefile' },
 })
 vim.lsp.enable("clangd")
+
 
 -- Terminal Shortcuts
 vim.keymap.set("n", "<leader>th", ":split | terminal<CR>",
@@ -299,5 +251,3 @@ vim.keymap.set("n", "<leader>tv", ":vsplit | terminal<CR>",
     { noremap = true, silent = true, desc = "Open terminal vertical split" })
 vim.keymap.set("n", "<leader>tt", ":tabnew | terminal<CR>",
     { noremap = true, silent = true, desc = "Open terminal in new tab" })
-
-

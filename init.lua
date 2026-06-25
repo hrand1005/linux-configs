@@ -240,6 +240,7 @@ vim.lsp.config('clangd', {
     cmd = { 'clangd' },
     filetypes = { 'c', 'cpp' },
     root_markers = { 'compile_commands.json', 'Makefile' },
+    on_attach = vim.lsp.config["*"].on_attach,
 })
 vim.lsp.enable("clangd")
 

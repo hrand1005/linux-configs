@@ -73,7 +73,7 @@ require("lazy").setup({
             build = ':TSUpdate',
             config = function()
                 local filetypes = {
-                    "rust", "python", "bash", "c", "diff", "html", "lua",
+                    "rust", "python", "bash", "c", "cpp", "diff", "html", "lua",
                     "luadoc", "markdown", "markdown_inline", "query", "vim",
                     "vimdoc", "slang", -- Register slang grammar inside the main loop
                 }

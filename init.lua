@@ -149,7 +149,7 @@ vim.keymap.set("n", "<leader>fh", fzf.help_tags, { desc = "Help tags" })
 
 vim.keymap.set("n", "<S-h>", ":tabprevious<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<S-l>", ":tabnext<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<leader>c", ":bd<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>q", ":bd<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader><", ":tabmove -1<CR>")
 vim.keymap.set("n", "<leader>>", ":tabmove +1<CR>")
 
@@ -159,12 +159,20 @@ vim.lsp.config("*", {
     root_markers = { ".git" },
     on_attach = function(client, bufnr)
         local opts = { noremap = true, silent = true, buffer = bufnr }
+        local actions = require("fzf-lua").actions
 
         vim.lsp.completion.enable(true, client.id, bufnr, { autotrigger = false })
         vim.keymap.set("i", "<C-Space>", function() vim.lsp.completion.get() end, opts)
 
         -- Navigation
         vim.keymap.set("n", "gd", fzf.lsp_definitions, opts)
+        vim.keymap.set("n", "<leader>gv", function()
+            fzf.lsp_definitions({ jump1_action = actions.file_vsplit })
+        end, opts)
+        vim.keymap.set("n", "<leader>gt", function()
+            fzf.lsp_definitions({ jump1_action = actions.file_tabedit })
+        end, opts)
+
         vim.keymap.set("n", "gi", fzf.lsp_implementations, opts)
         vim.keymap.set("n", "gr", fzf.lsp_references, opts)
         vim.keymap.set("n", "<leader>D", fzf.lsp_typedefs, opts)
